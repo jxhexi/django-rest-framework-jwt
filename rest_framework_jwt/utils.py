@@ -133,3 +133,27 @@ def jwt_response_payload_handler(token, user=None, request=None):
     return {
         'token': token
     }
+
+def jwt_response_payload_error_handler(serializer, request = None):
+    return {
+        "msg": "用户名或者密码错误",
+        "status": 400,
+        "detail": serializer.errors
+    }
+
+def jwt_k8s_response_payload_handler(token, user=None, request=None):
+    return {
+        "message": "success",
+        "code": 0,
+        "data": {
+            'token': token,
+            'username': user.username
+        }
+    }
+
+def jwt_k8s_response_payload_error_handler(serializer, request=None):
+    return {
+        "message": "用户名或者密码错误",
+        "code": 400,
+        "detail": serializer.errors
+    }

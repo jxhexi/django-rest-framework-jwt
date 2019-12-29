@@ -10,7 +10,6 @@ from rest_framework.authentication import (
 
 from rest_framework_jwt.settings import api_settings
 
-
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 jwt_get_username_from_payload = api_settings.JWT_PAYLOAD_GET_USERNAME_HANDLER
 
@@ -107,3 +106,21 @@ class JSONWebTokenAuthentication(BaseJSONWebTokenAuthentication):
         authentication scheme should return `403 Permission Denied` responses.
         """
         return '{0} realm="{1}"'.format(api_settings.JWT_AUTH_HEADER_PREFIX, self.www_authenticate_realm)
+
+
+class K8SJSONWebTokenAuthentication(BaseJSONWebTokenAuthentication):
+
+    def get_jwt_value(self, request):
+        try:
+            if (request.method == 'POST'):
+                ret = request.data
+
+                if 'apiVersion' in ret and 'kind' in ret:
+                    if ret['kind'] == "TokenReview":
+                        return request.data['spec']['token']
+                else:
+                    return None
+            else:
+                return None
+        except:
+            return None
